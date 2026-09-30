@@ -1,51 +1,50 @@
-import os
-from datetime import datetime, timedelta, timezone
+import json
+from decimal import Decimal
+from pathlib import Path
 
-import requests
 
+POOL_OWNER = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
+USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+SOL_MINT = "So11111111111111111111111111111111111111112"
+input_path = Path("src/data/raw/orca_sol_usdc_transactions.json")
 
-START_DATE = "2026-06-30"
-END_DATE = "2026-09-22"
+with input_path.open(encoding="utf-8") as input_file:
+    transactions = json.load(input_file)
 
-start_timestamp = int(
-    datetime.strptime(START_DATE, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp()
-)
-end_timestamp = int(
-    (
-        datetime.strptime(END_DATE, "%Y-%m-%d") + timedelta(days=1)
-    ).replace(tzinfo=timezone.utc).timestamp()
-)
+processed_transactions = []
 
-api_key = os.environ["HELIUS_API_KEY"]
-url = f"https://mainnet.helius-rpc.com/?api-key={api_key}"
+for transaction in transactions:
+    balances_before = {}
+    balances_after = {}
 
-payload = {
-    "jsonrpc": "2.0",
-    "id": "1",
-    "method": "getTransactionsForAddress",
-    "params": [
-        "Vote111111111111111111111111111111111111111",
+    for balance in transaction.get("meta", {}).get("preTokenBalances", []):
+        if balance.get("owner") == POOL_OWNER:
+            mint = balance["mint"]
+            amount = Decimal(balance["uiTokenAmount"]["uiAmountString"])
+            balances_before[mint] = balances_before.get(mint, Decimal("0")) + amount
+
+    for balance in transaction.get("meta", {}).get("postTokenBalances", []):
+        if balance.get("owner") == POOL_OWNER:
+            mint = balance["mint"]
+            amount = Decimal(balance["uiTokenAmount"]["uiAmountString"])
+            balances_after[mint] = balances_after.get(mint, Decimal("0")) + amount
+
+    usdc_before = balances_before.get(USDC_MINT, Decimal("0"))
+    usdc_after = balances_after.get(USDC_MINT, Decimal("0"))
+    sol_before = balances_before.get(SOL_MINT, Decimal("0"))
+    sol_after = balances_after.get(SOL_MINT, Decimal("0"))
+
+    processed_transactions.append(
         {
-            "transactionDetails": "signatures",
-            "limit": 50,
-            "sortOrder": "desc",
-            "filters": {
-                "status": "succeeded",
-                "blockTime": {
-                    "gte": start_timestamp,
-                    "lt": end_timestamp,
-                },
-                "tokenTransfer": {
-                    "direction": "in",
-                    "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-                },
-            },
-        },
-    ],
-}
-headers = {"Content-Type": "application/json"}
+            "signature": transaction["transaction"]["signatures"][0],
+            "block_time": transaction.get("blockTime"),
+            "usdc_before": float(usdc_before),
+            "usdc_after": float(usdc_after),
+            "usdc_delta": float(usdc_after - usdc_before),
+            "sol_before": float(sol_before),
+            "sol_after": float(sol_after),
+            "sol_delta": float(sol_after - sol_before),
+        }
+    )
 
-response = requests.post(url, json=payload, headers=headers, timeout=30)
-response.raise_for_status()
-
-print(response.text)
+print(json.dumps(processed_transactions[:10], ensure_ascii=False, indent=2))
