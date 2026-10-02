@@ -6,7 +6,7 @@ from pathlib import Path
 POOL_OWNER = "Czfq3xZZDmsdGdUyrNLtRhGc47cXcZtLG4crryfu44zE"
 USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 SOL_MINT = "So11111111111111111111111111111111111111112"
-input_path = Path("src/data/raw/orca_sol_usdc_transactions.json")
+input_path = Path(__file__).parent / "data/raw/orca_sol_usdc_transactions.json"
 
 with input_path.open(encoding="utf-8") as input_file:
     transactions = json.load(input_file)
@@ -47,4 +47,13 @@ for transaction in transactions:
         }
     )
 
-print(json.dumps(processed_transactions[:10], ensure_ascii=False, indent=2))
+moving_transactions = [
+    transaction
+    for transaction in processed_transactions
+    if transaction["usdc_delta"] != 0 or transaction["sol_delta"] != 0
+]
+
+print(f"Total de transações processadas: {len(processed_transactions)}")
+print(f"Transações com movimentação: {len(moving_transactions)}")
+print("Primeiras 10 transações com movimentação:")
+print(json.dumps(moving_transactions[:10], ensure_ascii=False, indent=2))
