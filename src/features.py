@@ -4,46 +4,91 @@ import numpy as np
 import pandas as pd
 
 
-input_path = Path(__file__).resolve().parent.parent / "data/processed/sol_usdc_swaps.csv"
-
-swaps = pd.read_csv(input_path, parse_dates=["timestamp"])
-swaps = swaps.sort_values("timestamp").reset_index(drop=True)
-
-swaps["direction"] = np.select(
-    [
-        (swaps["sol_delta"] > 0) & (swaps["usdc_delta"] < 0),
-        (swaps["sol_delta"] < 0) & (swaps["usdc_delta"] > 0),
-    ],
-    ["SOL_IN", "SOL_OUT"],
-    default="OTHER",
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data/processed"
+INPUT_PATH = OUTPUT_DIR / "liquidity_1m.csv"
+METRICS = (
+    "swap_count",
+    "volume_usdc",
+    "avg_trade_size_usdc",
+    "volatility",
+    "net_flow_usdc",
+    "flow_imbalance",
 )
-swaps["price_change_pct"] = swaps["price"].pct_change()
-swaps["log_return"] = np.log(swaps["price"] / swaps["price"].shift(1))
 
-valid_swaps = swaps[swaps["direction"].isin(["SOL_IN", "SOL_OUT"])].copy()
-valid_swaps = valid_swaps.sort_values("timestamp").reset_index(drop=True)
-valid_swaps["price_change_pct"] = valid_swaps["price"].pct_change()
-valid_swaps["log_return"] = np.log(
-    valid_swaps["price"] / valid_swaps["price"].shift(1)
-)
-valid_swaps["volume_log"] = np.log1p(valid_swaps["volume_usdc"])
 
-output_path = (
-    Path(__file__).resolve().parent.parent / "data/processed/sol_usdc_features.csv"
-)
-output_path.parent.mkdir(parents=True, exist_ok=True)
-valid_swaps.to_csv(output_path, index=False)
+def baseline_statistics(values):
+    """Compute global statistics over available observations, ignoring NaN."""
+    median = values.median()
+    percentiles = values.quantile([0.05, 0.25, 0.75, 0.95, 0.99])
+    return {
+        "median": median,
+        "p05": percentiles.loc[0.05],
+        "p25": percentiles.loc[0.25],
+        "p75": percentiles.loc[0.75],
+        "p95": percentiles.loc[0.95],
+        "p99": percentiles.loc[0.99],
+        "mad": (values - median).abs().median(),
+    }
 
-print(f"Número de observações antes da filtragem: {len(swaps)}")
-print(f"Número de observações válidas: {len(valid_swaps)}")
-print(f"Quantidade removida como OTHER: {len(swaps) - len(valid_swaps)}")
-print("Quantidade por direction:")
-print(valid_swaps["direction"].value_counts())
-print("Estatísticas descritivas:")
-print(
-    valid_swaps[
-        ["price", "volume_usdc", "price_change_pct", "log_return"]
-    ].describe()
-)
-print("Primeiras 10 linhas do dataset final:")
-print(valid_swaps.head(10))
+
+def empirical_percentile(values):
+    """100 * fraction of valid observations <= x; ties share the same rank."""
+    return values.rank(method="max", pct=True) * 100
+
+
+def build_features(windows):
+    windows = windows.copy()
+    windows["timestamp"] = pd.to_datetime(windows["timestamp"], utc=True)
+    windows = windows.sort_values("timestamp", kind="stable").reset_index(drop=True)
+    summary_rows = []
+    # This descriptive baseline uses the whole dataset, not a causal rolling baseline.
+    for metric in METRICS:
+        statistics = baseline_statistics(windows[metric])
+        summary_rows.append({"metric": metric, **statistics})
+        mad = statistics["mad"]
+        windows[f"{metric}_robust_z"] = (
+            0.6745 * (windows[metric] - statistics["median"]) / mad
+            if pd.notna(mad) and mad > 0
+            else np.nan
+        )
+    for metric in ("volume_usdc", "volatility"):
+        windows[f"{metric}_percentile"] = empirical_percentile(windows[metric])
+    windows["abs_flow_imbalance_percentile"] = empirical_percentile(
+        windows["flow_imbalance"].abs()
+    )
+    return windows, pd.DataFrame(summary_rows)
+
+
+def main():
+    windows = pd.read_csv(INPUT_PATH)
+    features, summary = build_features(windows)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    features.to_csv(OUTPUT_DIR / "liquidity_features_1m.csv", index=False)
+    summary.to_csv(OUTPUT_DIR / "liquidity_baseline_summary.csv", index=False)
+
+    print(f"Janelas analisadas: {len(features)}")
+    for metric in ("volume_usdc", "volatility"):
+        statistics = summary.set_index("metric").loc[metric]
+        print(f"{metric}: mediana {statistics['median']:.8f} | p95 {statistics['p95']:.8f}")
+    absolute_flow = features["flow_imbalance"].abs()
+    statistics = baseline_statistics(absolute_flow)
+    print(
+        f"abs(flow_imbalance): mediana {statistics['median']:.8f} | "
+        f"p95 {statistics['p95']:.8f}"
+    )
+    print("Janelas com abs(robust_z) > 3:")
+    for metric in METRICS:
+        count = (features[f"{metric}_robust_z"].abs() > 3).sum()
+        print(f"  {metric}: {count}")
+    for label, values in (
+        ("abs(flow_imbalance)", absolute_flow),
+        ("volatility", features["volatility"]),
+    ):
+        print(f"Top 5 janelas por {label} (UTC):")
+        # Ignore missing observations and preserve chronological order on ties.
+        for index, value in values.dropna().sort_values(ascending=False, kind="stable").head(5).items():
+            print(f"  {features.loc[index, 'timestamp'].isoformat()} | {value:.8f}")
+
+
+if __name__ == "__main__":
+    main()
