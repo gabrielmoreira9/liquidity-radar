@@ -1,0 +1,2630 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Liquidity Radar Historical MVP",
+    "description": "Read-only HISTORICAL data. Forward scores are not calibrated probabilities; exit cost is not observed slippage. Models are never executed by HTTP requests.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "Status"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Health_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/overview": {
+      "get": {
+        "tags": [
+          "Historical risk"
+        ],
+        "summary": "Overview",
+        "operationId": "overview_api_overview_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only windows closed at or before this UTC instant.",
+              "title": "As Of"
+            },
+            "description": "Only windows closed at or before this UTC instant."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Overview_"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/market-risk": {
+      "get": {
+        "tags": [
+          "Historical risk"
+        ],
+        "summary": "Market Risk",
+        "operationId": "market_risk_api_market_risk_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_MarketRisk_"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/forward-risk": {
+      "get": {
+        "tags": [
+          "Historical risk"
+        ],
+        "summary": "Forward Risk",
+        "operationId": "forward_risk_api_forward_risk_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ForwardRisk_"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/positions": {
+      "get": {
+        "tags": [
+          "Position exit"
+        ],
+        "summary": "Positions",
+        "operationId": "positions_api_positions_get",
+        "parameters": [
+          {
+            "name": "scenario",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "NORMAL",
+                "STRESS_25",
+                "STRESS_50",
+                "STRESS_75"
+              ],
+              "type": "string",
+              "default": "NORMAL",
+              "title": "Scenario"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Positions_"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/exit-cost": {
+      "get": {
+        "tags": [
+          "Position exit"
+        ],
+        "summary": "Exit Cost",
+        "operationId": "exit_cost_api_exit_cost_get",
+        "parameters": [
+          {
+            "name": "position_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "USDC: 10000, 50000, 100000, 250000, 500000, 1000000",
+              "default": 100000,
+              "title": "Position Size"
+            },
+            "description": "USDC: 10000, 50000, 100000, 250000, 500000, 1000000"
+          },
+          {
+            "name": "scenario",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "NORMAL",
+                "STRESS_25",
+                "STRESS_50",
+                "STRESS_75"
+              ],
+              "type": "string",
+              "default": "NORMAL",
+              "title": "Scenario"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_PositionExit_"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/liquidity/history": {
+      "get": {
+        "tags": [
+          "Historical series"
+        ],
+        "summary": "History",
+        "operationId": "history_api_liquidity_history_get",
+        "parameters": [
+          {
+            "name": "interval",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "1m",
+                "5m",
+                "15m"
+              ],
+              "type": "string",
+              "default": "1m",
+              "title": "Interval"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 1,
+              "default": 300,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_History_"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/backtest/summary": {
+      "get": {
+        "tags": [
+          "Retrospective evaluation"
+        ],
+        "summary": "Backtest Summary",
+        "operationId": "backtest_summary_api_backtest_summary_get",
+        "parameters": [
+          {
+            "name": "event",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "LOW_VOLUME_EVENT",
+                "HIGH_VOLATILITY_EVENT",
+                "HIGH_EXIT_COST_EVENT",
+                "ANY_DETERIORATION"
+              ],
+              "type": "string",
+              "default": "ANY_DETERIORATION",
+              "title": "Event"
+            }
+          },
+          {
+            "name": "sample",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "ALL_AVAILABLE",
+                "MATCHED",
+                "NON_OVERLAPPING_MATCHED",
+                "STRICT_COMPLETE_MATCHED"
+              ],
+              "type": "string",
+              "default": "MATCHED",
+              "title": "Sample"
+            }
+          },
+          {
+            "name": "horizon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "5, 15, 30 or 60 minutes",
+              "title": "Horizon"
+            },
+            "description": "5, 15, 30 or 60 minutes"
+          },
+          {
+            "name": "predictor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "CURRENT_MARKET_RISK",
+                    "FORWARD_LIQUIDITY_RISK",
+                    "LOW_CURRENT_VOLUME",
+                    "RECENT_VOLUME_DROP",
+                    "PERSISTENCE_PREVIOUS_CONDITION",
+                    "PREVALENCE_TRAINING"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Predictor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Backtest_"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Backtest": {
+        "properties": {
+          "analysis_scope": {
+            "type": "string",
+            "const": "RETROSPECTIVE_HOLDOUT",
+            "title": "Analysis Scope",
+            "default": "RETROSPECTIVE_HOLDOUT"
+          },
+          "train_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Train Start"
+          },
+          "test_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Test Start"
+          },
+          "test_end_exclusive": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Test End Exclusive"
+          },
+          "result_available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Result Available At"
+          },
+          "frozen_volume_p05_usdc": {
+            "type": "number",
+            "title": "Frozen Volume P05 Usdc"
+          },
+          "frozen_volatility_p95_std_log_return": {
+            "type": "number",
+            "title": "Frozen Volatility P95 Std Log Return"
+          },
+          "frozen_exit_cost_p95_pct": {
+            "type": "number",
+            "title": "Frozen Exit Cost P95 Pct"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BacktestRow"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "train_start",
+          "test_start",
+          "test_end_exclusive",
+          "result_available_at",
+          "frozen_volume_p05_usdc",
+          "frozen_volatility_p95_std_log_return",
+          "frozen_exit_cost_p95_pct",
+          "items",
+          "limitations"
+        ],
+        "title": "Backtest"
+      },
+      "BacktestRow": {
+        "properties": {
+          "predictor": {
+            "type": "string",
+            "enum": [
+              "CURRENT_MARKET_RISK",
+              "FORWARD_LIQUIDITY_RISK",
+              "LOW_CURRENT_VOLUME",
+              "RECENT_VOLUME_DROP",
+              "PERSISTENCE_PREVIOUS_CONDITION",
+              "PREVALENCE_TRAINING"
+            ],
+            "title": "Predictor"
+          },
+          "horizon_minutes": {
+            "type": "integer",
+            "title": "Horizon Minutes"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "LOW_VOLUME_EVENT",
+              "HIGH_VOLATILITY_EVENT",
+              "HIGH_EXIT_COST_EVENT",
+              "ANY_DETERIORATION"
+            ],
+            "title": "Event"
+          },
+          "sample": {
+            "type": "string",
+            "enum": [
+              "ALL_AVAILABLE",
+              "MATCHED",
+              "NON_OVERLAPPING_MATCHED",
+              "STRICT_COMPLETE_MATCHED"
+            ],
+            "title": "Sample"
+          },
+          "training_event_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Training Event Rate"
+          },
+          "training_event_valid_count": {
+            "type": "integer",
+            "title": "Training Event Valid Count"
+          },
+          "n_candidates": {
+            "type": "integer",
+            "title": "N Candidates"
+          },
+          "n_valid": {
+            "type": "integer",
+            "title": "N Valid"
+          },
+          "n_excluded": {
+            "type": "integer",
+            "title": "N Excluded"
+          },
+          "n_excluded_incomplete_horizon": {
+            "type": "integer",
+            "title": "N Excluded Incomplete Horizon"
+          },
+          "n_excluded_unknown_label": {
+            "type": "integer",
+            "title": "N Excluded Unknown Label"
+          },
+          "n_excluded_strict_missing_future_data": {
+            "type": "integer",
+            "title": "N Excluded Strict Missing Future Data"
+          },
+          "n_excluded_predictor": {
+            "type": "integer",
+            "title": "N Excluded Predictor"
+          },
+          "event_count": {
+            "type": "integer",
+            "title": "Event Count"
+          },
+          "event_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Rate"
+          },
+          "tp": {
+            "type": "integer",
+            "title": "Tp"
+          },
+          "fp": {
+            "type": "integer",
+            "title": "Fp"
+          },
+          "tn": {
+            "type": "integer",
+            "title": "Tn"
+          },
+          "fn": {
+            "type": "integer",
+            "title": "Fn"
+          },
+          "precision": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precision"
+          },
+          "recall": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recall"
+          },
+          "false_positive_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "False Positive Rate"
+          },
+          "specificity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Specificity"
+          },
+          "lift": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lift"
+          },
+          "roc_auc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roc Auc"
+          },
+          "pr_auc_average_precision": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pr Auc Average Precision"
+          },
+          "auc_unavailable_reason": {
+            "type": "string",
+            "title": "Auc Unavailable Reason"
+          },
+          "alert_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Rate"
+          },
+          "lead_time_median_minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Time Median Minutes"
+          },
+          "lead_time_p25_minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Time P25 Minutes"
+          },
+          "lead_time_p75_minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Time P75 Minutes"
+          },
+          "alerted_first_breach_minutes": {
+            "type": "integer",
+            "title": "Alerted First Breach Minutes"
+          },
+          "observed_first_breach_minutes": {
+            "type": "integer",
+            "title": "Observed First Breach Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "predictor",
+          "horizon_minutes",
+          "event",
+          "sample",
+          "training_event_rate",
+          "training_event_valid_count",
+          "n_candidates",
+          "n_valid",
+          "n_excluded",
+          "n_excluded_incomplete_horizon",
+          "n_excluded_unknown_label",
+          "n_excluded_strict_missing_future_data",
+          "n_excluded_predictor",
+          "event_count",
+          "event_rate",
+          "tp",
+          "fp",
+          "tn",
+          "fn",
+          "precision",
+          "recall",
+          "false_positive_rate",
+          "specificity",
+          "lift",
+          "roc_auc",
+          "pr_auc_average_precision",
+          "auc_unavailable_reason",
+          "alert_rate",
+          "lead_time_median_minutes",
+          "lead_time_p25_minutes",
+          "lead_time_p75_minutes",
+          "alerted_first_breach_minutes",
+          "observed_first_breach_minutes"
+        ],
+        "title": "BacktestRow"
+      },
+      "Envelope_Backtest_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Backtest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[Backtest]"
+      },
+      "Envelope_ForwardRisk_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ForwardRisk"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[ForwardRisk]"
+      },
+      "Envelope_Health_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Health"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[Health]"
+      },
+      "Envelope_History_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/History"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[History]"
+      },
+      "Envelope_MarketRisk_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MarketRisk"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[MarketRisk]"
+      },
+      "Envelope_Overview_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Overview"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[Overview]"
+      },
+      "Envelope_PositionExit_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PositionExit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[PositionExit]"
+      },
+      "Envelope_Positions_": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Positions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "meta",
+          "data"
+        ],
+        "title": "Envelope[Positions]"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "field",
+          "message"
+        ],
+        "title": "ErrorDetail"
+      },
+      "ErrorInfo": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "details": {
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "type": "array",
+            "title": "Details"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorInfo"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorInfo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "ForwardComponents": {
+        "properties": {
+          "liquidity_risk_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Liquidity Risk 0 100"
+          },
+          "flow_risk_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flow Risk 0 100"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "liquidity_risk_0_100",
+          "flow_risk_0_100"
+        ],
+        "title": "ForwardComponents"
+      },
+      "ForwardRisk": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available At"
+          },
+          "score_0_100": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score 0 100"
+          },
+          "regime": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "WATCH",
+              "STRESSED",
+              "CRITICAL",
+              "INDETERMINATE"
+            ],
+            "title": "Regime"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "INDETERMINATE"
+            ],
+            "title": "Status"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          },
+          "primary_risk_driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Risk Driver"
+          },
+          "secondary_risk_driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secondary Risk Driver"
+          },
+          "regime_policy": {
+            "type": "string",
+            "title": "Regime Policy",
+            "default": "HEURISTIC_UNCALIBRATED_40_60_80"
+          },
+          "indicator": {
+            "type": "string",
+            "const": "FORWARD_LIQUIDITY_RISK",
+            "title": "Indicator",
+            "default": "FORWARD_LIQUIDITY_RISK"
+          },
+          "components": {
+            "$ref": "#/components/schemas/ForwardComponents"
+          },
+          "is_calibrated_probability": {
+            "type": "boolean",
+            "const": false,
+            "title": "Is Calibrated Probability",
+            "default": false
+          },
+          "interpretation": {
+            "type": "string",
+            "title": "Interpretation",
+            "default": "EXPLORATORY_FORWARD_SIGNAL_NOT_VALIDATED_FORECAST"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timestamp",
+          "available_at",
+          "score_0_100",
+          "regime",
+          "status",
+          "unavailable_reason",
+          "primary_risk_driver",
+          "secondary_risk_driver",
+          "components"
+        ],
+        "title": "ForwardRisk"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "OK",
+            "title": "Status",
+            "default": "OK"
+          },
+          "api_version": {
+            "type": "string",
+            "title": "Api Version"
+          },
+          "datasets_ready": {
+            "type": "boolean",
+            "title": "Datasets Ready"
+          },
+          "cache_loaded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Cache Loaded At"
+          },
+          "helius_required": {
+            "type": "boolean",
+            "const": false,
+            "title": "Helius Required",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "api_version",
+          "datasets_ready",
+          "cache_loaded_at"
+        ],
+        "title": "Health"
+      },
+      "History": {
+        "properties": {
+          "interval": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "15m"
+            ],
+            "title": "Interval"
+          },
+          "order": {
+            "type": "string",
+            "const": "ASC",
+            "title": "Order",
+            "default": "ASC"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LiquidityWindow"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "interval",
+          "pagination",
+          "items"
+        ],
+        "title": "History"
+      },
+      "LiquidityWindow": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available At"
+          },
+          "swap_count": {
+            "type": "integer",
+            "title": "Swap Count"
+          },
+          "volume_usdc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Usdc"
+          },
+          "avg_trade_size_usdc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Trade Size Usdc"
+          },
+          "median_trade_size_usdc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Trade Size Usdc"
+          },
+          "price_open_usdc_per_sol": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Open Usdc Per Sol"
+          },
+          "price_close_usdc_per_sol": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Close Usdc Per Sol"
+          },
+          "price_min_usdc_per_sol": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Min Usdc Per Sol"
+          },
+          "price_max_usdc_per_sol": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Max Usdc Per Sol"
+          },
+          "price_return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Return Pct"
+          },
+          "volatility_std_log_return": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volatility Std Log Return"
+          },
+          "volatility_status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "INSUFFICIENT_PRICES",
+              "NO_SWAPS",
+              "NON_FINITE_SOURCE"
+            ],
+            "title": "Volatility Status"
+          },
+          "net_flow_usdc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Flow Usdc"
+          },
+          "flow_imbalance_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flow Imbalance Ratio"
+          },
+          "flow_status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "NO_VOLUME",
+              "MISSING_SOURCE"
+            ],
+            "title": "Flow Status"
+          },
+          "risk_at_close": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskAtClose"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timestamp",
+          "available_at",
+          "swap_count",
+          "volume_usdc",
+          "avg_trade_size_usdc",
+          "median_trade_size_usdc",
+          "price_open_usdc_per_sol",
+          "price_close_usdc_per_sol",
+          "price_min_usdc_per_sol",
+          "price_max_usdc_per_sol",
+          "price_return_pct",
+          "volatility_std_log_return",
+          "volatility_status",
+          "net_flow_usdc",
+          "flow_imbalance_ratio",
+          "flow_status"
+        ],
+        "title": "LiquidityWindow"
+      },
+      "MarketComponents": {
+        "properties": {
+          "volatility_risk_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volatility Risk 0 100"
+          },
+          "liquidity_risk_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Liquidity Risk 0 100"
+          },
+          "flow_risk_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flow Risk 0 100"
+          },
+          "reference_exit_cost_risk_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Exit Cost Risk 0 100"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "volatility_risk_0_100",
+          "liquidity_risk_0_100",
+          "flow_risk_0_100",
+          "reference_exit_cost_risk_0_100"
+        ],
+        "title": "MarketComponents"
+      },
+      "MarketRisk": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available At"
+          },
+          "score_0_100": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score 0 100"
+          },
+          "regime": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "WATCH",
+              "STRESSED",
+              "CRITICAL",
+              "INDETERMINATE"
+            ],
+            "title": "Regime"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "INDETERMINATE"
+            ],
+            "title": "Status"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          },
+          "primary_risk_driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Risk Driver"
+          },
+          "secondary_risk_driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secondary Risk Driver"
+          },
+          "regime_policy": {
+            "type": "string",
+            "title": "Regime Policy",
+            "default": "HEURISTIC_UNCALIBRATED_40_60_80"
+          },
+          "indicator": {
+            "type": "string",
+            "const": "CURRENT_MARKET_RISK",
+            "title": "Indicator",
+            "default": "CURRENT_MARKET_RISK"
+          },
+          "components": {
+            "$ref": "#/components/schemas/MarketComponents"
+          },
+          "reference_position_size_usdc": {
+            "type": "integer",
+            "const": 100000,
+            "title": "Reference Position Size Usdc",
+            "default": 100000
+          },
+          "reference_scenario": {
+            "type": "string",
+            "const": "NORMAL",
+            "title": "Reference Scenario",
+            "default": "NORMAL"
+          },
+          "reference_estimated_exit_cost_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Estimated Exit Cost Pct"
+          },
+          "reference_extrapolation_warning": {
+            "type": "boolean",
+            "title": "Reference Extrapolation Warning"
+          },
+          "reference_model_reliability_status": {
+            "type": "string",
+            "title": "Reference Model Reliability Status"
+          },
+          "interpretation": {
+            "type": "string",
+            "title": "Interpretation",
+            "default": "CURRENT_MARKET_SEVERITY"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timestamp",
+          "available_at",
+          "score_0_100",
+          "regime",
+          "status",
+          "unavailable_reason",
+          "primary_risk_driver",
+          "secondary_risk_driver",
+          "components",
+          "reference_estimated_exit_cost_pct",
+          "reference_extrapolation_warning",
+          "reference_model_reliability_status"
+        ],
+        "title": "MarketRisk"
+      },
+      "Metadata": {
+        "properties": {
+          "data_kind": {
+            "type": "string",
+            "const": "HISTORICAL",
+            "title": "Data Kind",
+            "default": "HISTORICAL"
+          },
+          "dataset_mode": {
+            "type": "string",
+            "enum": [
+              "FULL",
+              "DEMO"
+            ],
+            "title": "Dataset Mode"
+          },
+          "reference_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Reference At"
+          },
+          "requested_as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested As Of"
+          },
+          "available_period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "risk_version": {
+            "type": "string",
+            "title": "Risk Version"
+          },
+          "availability_basis": {
+            "type": "string",
+            "title": "Availability Basis",
+            "default": "THEORETICAL_WINDOW_CLOSE_NOT_MEASURED_INGESTION"
+          },
+          "coverage_notice": {
+            "type": "string",
+            "title": "Coverage Notice"
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Units"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "dataset_mode",
+          "reference_at",
+          "available_period",
+          "risk_version",
+          "coverage_notice",
+          "units"
+        ],
+        "title": "Metadata"
+      },
+      "Overview": {
+        "properties": {
+          "closed_window_count_1m": {
+            "type": "integer",
+            "title": "Closed Window Count 1M"
+          },
+          "swap_count": {
+            "type": "integer",
+            "title": "Swap Count"
+          },
+          "volume_usdc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Usdc"
+          },
+          "net_flow_usdc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Flow Usdc"
+          },
+          "empty_window_count_1m": {
+            "type": "integer",
+            "title": "Empty Window Count 1M"
+          },
+          "missing_volatility_count_1m": {
+            "type": "integer",
+            "title": "Missing Volatility Count 1M"
+          },
+          "current_market_risk": {
+            "$ref": "#/components/schemas/MarketRisk"
+          },
+          "forward_liquidity_risk": {
+            "$ref": "#/components/schemas/ForwardRisk"
+          },
+          "positions_normal": {
+            "items": {
+              "$ref": "#/components/schemas/PositionExit"
+            },
+            "type": "array",
+            "title": "Positions Normal"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "closed_window_count_1m",
+          "swap_count",
+          "volume_usdc",
+          "net_flow_usdc",
+          "empty_window_count_1m",
+          "missing_volatility_count_1m",
+          "current_market_risk",
+          "forward_liquidity_risk",
+          "positions_normal"
+        ],
+        "title": "Overview"
+      },
+      "Pagination": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "next_offset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total",
+          "offset",
+          "limit",
+          "next_offset"
+        ],
+        "title": "Pagination"
+      },
+      "Period": {
+        "properties": {
+          "window_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Window Start"
+          },
+          "window_end_exclusive": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Window End Exclusive"
+          },
+          "available_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available From"
+          },
+          "available_until": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available Until"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "window_start",
+          "window_end_exclusive",
+          "available_from",
+          "available_until"
+        ],
+        "title": "Period"
+      },
+      "PositionExit": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available At"
+          },
+          "indicator": {
+            "type": "string",
+            "const": "POSITION_EXIT_RISK",
+            "title": "Indicator",
+            "default": "POSITION_EXIT_RISK"
+          },
+          "position_size_usdc": {
+            "type": "integer",
+            "title": "Position Size Usdc"
+          },
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "STRESS_25",
+              "STRESS_50",
+              "STRESS_75"
+            ],
+            "title": "Scenario"
+          },
+          "available_volume_usdc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available Volume Usdc"
+          },
+          "estimated_exit_cost_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Exit Cost Pct"
+          },
+          "participation_rate_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Rate Ratio"
+          },
+          "liquidity_multiple_causal_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Liquidity Multiple Causal Ratio"
+          },
+          "liquidity_multiple_unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Liquidity Multiple Unavailable Reason"
+          },
+          "operational_risk": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MODERATE",
+              "HIGH",
+              "EXTREME",
+              "INDETERMINATE"
+            ],
+            "title": "Operational Risk"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "INDETERMINATE"
+            ],
+            "title": "Status"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          },
+          "model_reliability_status": {
+            "type": "string",
+            "title": "Model Reliability Status"
+          },
+          "extrapolation_warning": {
+            "type": "boolean",
+            "title": "Extrapolation Warning"
+          },
+          "extrapolation_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extrapolation Reason"
+          },
+          "insufficient_liquidity_flag": {
+            "type": "boolean",
+            "title": "Insufficient Liquidity Flag"
+          },
+          "insufficient_data_flag": {
+            "type": "boolean",
+            "title": "Insufficient Data Flag"
+          },
+          "volatility_std_log_return": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volatility Std Log Return"
+          },
+          "interpretation": {
+            "type": "string",
+            "title": "Interpretation"
+          },
+          "is_observed_slippage": {
+            "type": "boolean",
+            "const": false,
+            "title": "Is Observed Slippage",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "timestamp",
+          "available_at",
+          "position_size_usdc",
+          "scenario",
+          "available_volume_usdc",
+          "estimated_exit_cost_pct",
+          "participation_rate_ratio",
+          "liquidity_multiple_causal_ratio",
+          "liquidity_multiple_unavailable_reason",
+          "operational_risk",
+          "status",
+          "unavailable_reason",
+          "model_reliability_status",
+          "extrapolation_warning",
+          "extrapolation_reason",
+          "insufficient_liquidity_flag",
+          "insufficient_data_flag",
+          "volatility_std_log_return",
+          "interpretation"
+        ],
+        "title": "PositionExit"
+      },
+      "Positions": {
+        "properties": {
+          "position_sizes_usdc": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Position Sizes Usdc"
+          },
+          "scenarios": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "NORMAL",
+                "STRESS_25",
+                "STRESS_50",
+                "STRESS_75"
+              ]
+            },
+            "type": "array",
+            "title": "Scenarios"
+          },
+          "selected_scenario": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "STRESS_25",
+              "STRESS_50",
+              "STRESS_75"
+            ],
+            "title": "Selected Scenario"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PositionExit"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "position_sizes_usdc",
+          "scenarios",
+          "selected_scenario",
+          "items"
+        ],
+        "title": "Positions"
+      },
+      "RiskAtClose": {
+        "properties": {
+          "available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available At"
+          },
+          "current_market_risk_score_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Market Risk Score 0 100"
+          },
+          "current_market_risk_regime": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "WATCH",
+              "STRESSED",
+              "CRITICAL",
+              "INDETERMINATE"
+            ],
+            "title": "Current Market Risk Regime"
+          },
+          "current_market_unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Market Unavailable Reason"
+          },
+          "forward_liquidity_risk_score_0_100": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Liquidity Risk Score 0 100"
+          },
+          "forward_liquidity_risk_regime": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "WATCH",
+              "STRESSED",
+              "CRITICAL",
+              "INDETERMINATE"
+            ],
+            "title": "Forward Liquidity Risk Regime"
+          },
+          "forward_unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forward Unavailable Reason"
+          },
+          "components": {
+            "$ref": "#/components/schemas/MarketComponents"
+          },
+          "reference_position_size_usdc": {
+            "type": "integer",
+            "const": 100000,
+            "title": "Reference Position Size Usdc",
+            "default": 100000
+          },
+          "reference_scenario": {
+            "type": "string",
+            "const": "NORMAL",
+            "title": "Reference Scenario",
+            "default": "NORMAL"
+          },
+          "reference_estimated_exit_cost_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Estimated Exit Cost Pct"
+          },
+          "reference_extrapolation_warning": {
+            "type": "boolean",
+            "title": "Reference Extrapolation Warning"
+          },
+          "reference_model_reliability_status": {
+            "type": "string",
+            "title": "Reference Model Reliability Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "available_at",
+          "current_market_risk_score_0_100",
+          "current_market_risk_regime",
+          "current_market_unavailable_reason",
+          "forward_liquidity_risk_score_0_100",
+          "forward_liquidity_risk_regime",
+          "forward_unavailable_reason",
+          "components",
+          "reference_estimated_exit_cost_pct",
+          "reference_extrapolation_warning",
+          "reference_model_reliability_status"
+        ],
+        "title": "RiskAtClose",
+        "description": "Existing 1m indicators at this bar close; never aggregated or recalculated."
+      }
+    }
+  }
+}

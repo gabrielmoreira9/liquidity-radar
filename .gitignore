@@ -38,6 +38,9 @@ venv/
 
 # Processed datasets and generated artifacts (keep directory/docs versionable)
 **/data/processed/**/*.csv
+**/data/processed/**/*.csv.gz
+**/data/processed/**/*.csv.zip
+**/data/processed/**/*.csv.zst
 **/data/processed/**/*.parquet
 **/data/processed/**/*.feather
 **/data/processed/**/*.pkl
@@ -46,6 +49,8 @@ venv/
 **/data/processed/**/*.npy
 **/data/processed/**/*.json
 **/data/processed/**/*.jsonl
+**/data/processed/**/*.json.gz
+**/data/processed/**/*.parquet.gz
 **/data/processed/audit/**
 **/data/processed/risk_v2_runs/**
 !**/data/processed/audit/**/
