@@ -1,0 +1,21 @@
+# Direct project dependencies, audited from src/, scripts/ and tests/.
+# Tested on CPython 3.12.14. Exact pins retain the validated API/statistical behavior.
+# Install in a clean venv: python -m pip install -r requirements.txt
+# This is not an export of the Conda environment; transitive dependencies are
+# resolved by these packages. Tests use standard-library unittest, not pytest.
+
+# API serving and explicit Pydantic/Starlette contracts/error handling.
+fastapi==0.138.0
+uvicorn==0.52.4
+pydantic==2.13.5
+starlette==1.3.1
+
+# Offline statistical pipeline and historical RPC clients.
+numpy==2.5.2
+pandas==3.0.5
+requests==2.34.2
+python-dotenv==1.2.2
+
+# FastAPI TestClient and offline API example export. The pinned Starlette version
+# emits a TestClient deprecation warning with HTTPX, but the combination is tested.
+httpx==0.28.1
