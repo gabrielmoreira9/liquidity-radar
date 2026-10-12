@@ -8,31 +8,36 @@ function useElementScrollProgress(
   mode: "scene" | "hero",
 ) {
   const [progress, setProgress] = useState(0);
+  const frame = useRef<number | null>(null);
 
   useEffect(() => {
     const element = target.current;
     if (!element) return;
 
     const update = () => {
-      const rect = element.getBoundingClientRect();
-      const top = rect.top + window.scrollY;
-      const start = mode === "hero" ? top : top - window.innerHeight;
-      const end = mode === "hero" ? top + rect.height : top + rect.height;
-      setProgress(
-        Math.min(1, Math.max(0, (window.scrollY - start) / (end - start))),
-      );
+      if (frame.current !== null) return;
+      frame.current = window.requestAnimationFrame(() => {
+        frame.current = null;
+        const rect = element.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        const start = mode === "hero" ? top : top - window.innerHeight;
+        const end = mode === "hero" ? top + rect.height : top + rect.height;
+        setProgress(
+          Math.min(1, Math.max(0, (window.scrollY - start) / (end - start))),
+        );
+      });
     };
 
     update();
     window.addEventListener("scroll", update, { passive: true });
-    document.addEventListener("scroll", update, { passive: true, capture: true });
-    document.documentElement.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
       window.removeEventListener("scroll", update);
-      document.removeEventListener("scroll", update, true);
-      document.documentElement.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      if (frame.current !== null) {
+        window.cancelAnimationFrame(frame.current);
+        frame.current = null;
+      }
     };
   }, [mode, target]);
 
@@ -54,31 +59,6 @@ export function ScrollScene({
   const composition = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const scrollYProgress = useElementScrollProgress(target, "scene");
-  useEffect(() => {
-    if (reduced) return;
-    const update = () => {
-      const element = target.current;
-      const content = composition.current;
-      if (!element || !content) return;
-      const rect = element.getBoundingClientRect();
-      const start = rect.top + window.scrollY - window.innerHeight;
-      const progress = Math.min(
-        1,
-        Math.max(0, (window.scrollY - start) / (rect.height + window.innerHeight)),
-      );
-      const scale = (expand ? 0.76 : 0.9) + progress * (expand ? 0.3 : 0.1);
-      const y = 120 - progress * 220;
-      content.style.transform = `translate3d(0, ${y}px, 0) scale(${scale})`;
-      content.style.opacity = String(Math.min(1, 0.2 + progress * 1.2));
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    const interval = window.setInterval(update, 50);
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.clearInterval(interval);
-    };
-  }, [expand, reduced]);
   const scale =
     scrollYProgress < 0.2
       ? (expand ? 0.76 : 0.9) + scrollYProgress * (expand ? 0.55 : 0.4)
